@@ -67,6 +67,23 @@ main {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     padding: 5rem 0;
+}
+
+.hero-content {
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.hero-text {
+    flex: 1;
+    text-align: left;
+}
+
+.hero-image {
+    flex: 0 0 400px;
     text-align: center;
 }
 
@@ -94,6 +111,22 @@ main {
 
 .cta-button:hover {
     background: #c0392b;
+}
+
+/* Professional Photo Styles */
+.professional-photo {
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.professional-photo:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
 }
 
 /* Features Section */
@@ -207,19 +240,88 @@ main {
 /* Contact Section */
 .contact {
     padding: 4rem 0;
-    background: white;
-    text-align: center;
+    background: #f8f9fa;
 }
 
-.contact h3 {
+.contact-content {
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.contact-info {
+    flex: 1;
+}
+
+.contact-info h3 {
     font-size: 2.5rem;
     margin-bottom: 1rem;
     color: #2c3e50;
 }
 
-.contact p {
+.contact-info p {
     font-size: 1.2rem;
     color: #666;
+    margin-bottom: 2rem;
+}
+
+.contact-details {
+    margin-top: 2rem;
+}
+
+.email-contact {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.email-contact:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.email-icon {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+}
+
+.email-link {
+    color: #3498db;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.email-link:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+.contact-image {
+    flex: 0 0 300px;
+    text-align: center;
+}
+
+.contact-photo {
+    width: 280px;
+    height: 280px;
+    border-radius: 20px;
+    object-fit: cover;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.contact-photo:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
 }
 
 /* Footer */
@@ -236,8 +338,42 @@ footer {
         gap: 1rem;
     }
     
+    .hero-content {
+        flex-direction: column;
+        gap: 2rem;
+        text-align: center;
+    }
+    
+    .hero-text {
+        text-align: center;
+    }
+    
+    .hero-image {
+        flex: none;
+    }
+    
+    .professional-photo {
+        width: 250px;
+        height: 250px;
+    }
+    
     .hero h2 {
         font-size: 2rem;
+    }
+    
+    .contact-content {
+        flex-direction: column;
+        gap: 2rem;
+        text-align: center;
+    }
+    
+    .contact-image {
+        flex: none;
+    }
+    
+    .contact-photo {
+        width: 220px;
+        height: 220px;
     }
     
     .input-group {
