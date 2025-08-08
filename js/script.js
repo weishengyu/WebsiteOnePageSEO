@@ -34,6 +34,33 @@ class SEOAnalyzer {
                 }
             });
         }
+
+        // 綁定競爭對手比較功能
+        const compareMode = document.getElementById('compare-mode');
+        const competitorInputs = document.getElementById('competitor-inputs');
+        if (compareMode && competitorInputs) {
+            compareMode.addEventListener('change', () => {
+                competitorInputs.style.display = compareMode.checked ? 'block' : 'none';
+            });
+        }
+
+        // 綁定比較按鈕
+        const compareButton = document.getElementById('compare-btn');
+        if (compareButton) {
+            compareButton.addEventListener('click', () => {
+                this.compareWebsites();
+            });
+        }
+
+        // 綁定競爭對手輸入框 Enter 鍵
+        const competitorInput = document.getElementById('competitor-url');
+        if (competitorInput) {
+            competitorInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.compareWebsites();
+                }
+            });
+        }
     }
 
     setupSmoothScrolling() {
@@ -237,6 +264,26 @@ class SEOAnalyzer {
                             <span>📱 移動端優化</span>
                             <span class="score ${this.getScoreClass(results.metrics.mobileOptimization)}">${results.metrics.mobileOptimization}/100</span>
                         </div>
+                        ${results.metrics.security !== undefined ? `
+                        <div class="metric-item">
+                            <span>🔒 安全性</span>
+                            <span class="score ${this.getScoreClass(results.metrics.security)}">${results.metrics.security}/100</span>
+                        </div>` : ''}
+                        ${results.metrics.structuredData !== undefined ? `
+                        <div class="metric-item">
+                            <span>🏗️ 結構化資料</span>
+                            <span class="score ${this.getScoreClass(results.metrics.structuredData)}">${results.metrics.structuredData}/100</span>
+                        </div>` : ''}
+                        ${results.metrics.socialMedia !== undefined ? `
+                        <div class="metric-item">
+                            <span>📱 社交媒體</span>
+                            <span class="score ${this.getScoreClass(results.metrics.socialMedia)}">${results.metrics.socialMedia}/100</span>
+                        </div>` : ''}
+                        ${results.metrics.accessibility !== undefined ? `
+                        <div class="metric-item">
+                            <span>♿ 無障礙性</span>
+                            <span class="score ${this.getScoreClass(results.metrics.accessibility)}">${results.metrics.accessibility}/100</span>
+                        </div>` : ''}
                     </div>
                 </div>
 
@@ -317,6 +364,70 @@ class SEOAnalyzer {
                     <p><strong>連結總數：</strong> ${detailed.links.total}</p>
                     <p><strong>內部連結：</strong> ${detailed.links.internal}</p>
                     <p><strong>外部連結：</strong> ${detailed.links.external}</p>
+                </div>
+            `;
+        }
+        
+        if (detailed.security) {
+            html += `
+                <div class="detail-section">
+                    <h6>🔒 安全性分析</h6>
+                    ${detailed.security.features.length > 0 ? `<p><strong>安全特性：</strong> ${detailed.security.features.join('、')}</p>` : ''}
+                    ${detailed.security.issues.length > 0 ? `<p><strong>安全問題：</strong> ${detailed.security.issues.join('、')}</p>` : ''}
+                </div>
+            `;
+        }
+        
+        if (detailed.structuredData) {
+            html += `
+                <div class="detail-section">
+                    <h6>🏗️ 結構化資料分析</h6>
+                    ${detailed.structuredData.types.length > 0 ? `<p><strong>資料類型：</strong> ${detailed.structuredData.types.join('、')}</p>` : ''}
+                    ${detailed.structuredData.issues.length > 0 ? `<p><strong>問題：</strong> ${detailed.structuredData.issues.join('、')}</p>` : ''}
+                </div>
+            `;
+        }
+        
+        if (detailed.socialMedia) {
+            html += `
+                <div class="detail-section">
+                    <h6>📱 社交媒體標籤</h6>
+                    ${Object.keys(detailed.socialMedia.platforms).length > 0 ? 
+                        Object.entries(detailed.socialMedia.platforms).map(([platform, info]) => 
+                            `<p><strong>${platform === 'facebook' ? 'Facebook' : 'Twitter'}：</strong> ${info}</p>`
+                        ).join('') : ''}
+                    ${detailed.socialMedia.issues.length > 0 ? `<p><strong>問題：</strong> ${detailed.socialMedia.issues.join('、')}</p>` : ''}
+                </div>
+            `;
+        }
+        
+        if (detailed.performance) {
+            html += `
+                <div class="detail-section">
+                    <h6>⚡ 效能分析</h6>
+                    <p><strong>總資源數：</strong> ${detailed.performance.metrics.totalResources} (圖片: ${detailed.performance.metrics.images}, JS: ${detailed.performance.metrics.scripts}, CSS: ${detailed.performance.metrics.stylesheets})</p>
+                    ${detailed.performance.metrics.lazyLoadingImages ? `<p><strong>延遲載入圖片：</strong> ${detailed.performance.metrics.lazyLoadingImages}</p>` : ''}
+                    ${detailed.performance.metrics.hasMinification ? `<p><strong>檔案壓縮：</strong> 偵測到壓縮檔案</p>` : ''}
+                    ${detailed.performance.issues.length > 0 ? `<p><strong>效能問題：</strong> ${detailed.performance.issues.join('、')}</p>` : ''}
+                </div>
+            `;
+        }
+        
+        if (detailed.accessibility) {
+            html += `
+                <div class="detail-section">
+                    <h6>♿ 無障礙性分析</h6>
+                    ${detailed.accessibility.features.length > 0 ? `<p><strong>無障礙特性：</strong> ${detailed.accessibility.features.join('、')}</p>` : ''}
+                    ${detailed.accessibility.issues.length > 0 ? `<p><strong>無障礙問題：</strong> ${detailed.accessibility.issues.join('、')}</p>` : ''}
+                </div>
+            `;
+        }
+        
+        if (detailed.mobile && detailed.mobile.issues) {
+            html += `
+                <div class="detail-section">
+                    <h6>📱 移動端優化</h6>
+                    ${detailed.mobile.issues.length > 0 ? `<p><strong>移動端問題：</strong> ${detailed.mobile.issues.join('、')}</p>` : '<p>✅ 移動端優化良好</p>'}
                 </div>
             `;
         }
@@ -440,6 +551,294 @@ class SEOAnalyzer {
         }, 3000);
     }
 
+    // 新增：競爭對手比較功能
+    async compareWebsites() {
+        const primaryUrl = document.getElementById('website-url').value.trim();
+        const competitorUrl = document.getElementById('competitor-url').value.trim();
+        const resultsContainer = document.getElementById('results');
+        const compareButton = document.getElementById('compare-btn');
+        
+        if (!this.isValidUrl(primaryUrl)) {
+            this.showError('請輸入有效的主要網站網址');
+            return;
+        }
+        
+        if (!this.isValidUrl(competitorUrl)) {
+            this.showError('請輸入有效的競爭對手網址');
+            return;
+        }
+        
+        // 顯示載入狀態
+        compareButton.innerHTML = '<span class="loading"></span> 分析中...';
+        compareButton.disabled = true;
+        resultsContainer.innerHTML = '<div style="text-align: center; padding: 2rem;"><div class="loading"></div><p>正在比較分析兩個網站，請稍候...</p></div>';
+        
+        try {
+            // 並行分析兩個網站
+            const [primaryResults, competitorResults] = await Promise.all([
+                this.performRealAnalysis(primaryUrl).catch(() => this.generateAnalysisResults(primaryUrl)),
+                this.performRealAnalysis(competitorUrl).catch(() => this.generateAnalysisResults(competitorUrl))
+            ]);
+            
+            // 顯示比較結果
+            this.displayComparisonResults(primaryResults, competitorResults);
+            
+            // 保存比較歷史
+            this.saveComparisonHistory(primaryResults, competitorResults);
+            
+        } catch (error) {
+            console.error('比較分析失敗:', error);
+            this.showError('比較分析過程中發生錯誤，請稍後再試。');
+        } finally {
+            compareButton.innerHTML = '比較分析';
+            compareButton.disabled = false;
+        }
+    }
+
+    displayComparisonResults(primary, competitor) {
+        const resultsContainer = document.getElementById('results');
+        
+        const html = `
+            <div class="comparison-results">
+                <div class="comparison-header">
+                    <h4>🔄 競爭對手比較分析</h4>
+                    <div class="analysis-time">
+                        <small>比較時間：${new Date().toLocaleString('zh-TW')}</small>
+                    </div>
+                </div>
+
+                <div class="comparison-overview">
+                    <div class="website-comparison">
+                        <div class="website-card primary">
+                            <h5>🏆 主要網站</h5>
+                            <p class="domain">${primary.domain}</p>
+                            <div class="score-display ${this.getScoreClass(primary.overallScore)}">
+                                ${primary.overallScore}/100
+                            </div>
+                        </div>
+                        
+                        <div class="vs-separator">VS</div>
+                        
+                        <div class="website-card competitor">
+                            <h5>⚔️ 競爭對手</h5>
+                            <p class="domain">${competitor.domain}</p>
+                            <div class="score-display ${this.getScoreClass(competitor.overallScore)}">
+                                ${competitor.overallScore}/100
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="winner-announcement">
+                        ${this.getWinnerMessage(primary, competitor)}
+                    </div>
+                </div>
+
+                <div class="metrics-comparison">
+                    <h5>📊 詳細指標比較</h5>
+                    <div class="comparison-table">
+                        ${this.generateMetricsComparison(primary.metrics, competitor.metrics)}
+                    </div>
+                </div>
+
+                <div class="insights-section">
+                    <h5>💡 競爭分析洞察</h5>
+                    <div class="insights-grid">
+                        ${this.generateCompetitiveInsights(primary, competitor)}
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button onclick="seoAnalyzer.exportComparison()" class="export-btn">📄 匯出比較報告</button>
+                    <button onclick="seoAnalyzer.shareComparison()" class="share-btn">📤 分享比較</button>
+                    <button onclick="seoAnalyzer.backToAnalyzer()" class="back-btn">← 返回分析器</button>
+                </div>
+            </div>
+        `;
+
+        resultsContainer.innerHTML = html;
+        
+        // 儲存比較結果
+        this.currentComparison = { primary, competitor };
+    }
+
+    getWinnerMessage(primary, competitor) {
+        const diff = primary.overallScore - competitor.overallScore;
+        const primaryDomain = primary.domain;
+        const competitorDomain = competitor.domain;
+        
+        if (Math.abs(diff) < 5) {
+            return `<div class="tie-message">🤝 兩網站 SEO 表現相當接近！分數差距僅 ${Math.abs(diff)} 分</div>`;
+        } else if (diff > 0) {
+            return `<div class="winner-message primary">🏆 ${primaryDomain} 領先 ${competitorDomain} ${diff} 分！</div>`;
+        } else {
+            return `<div class="winner-message competitor">⚔️ ${competitorDomain} 領先 ${primaryDomain} ${Math.abs(diff)} 分！</div>`;
+        }
+    }
+
+    generateMetricsComparison(primaryMetrics, competitorMetrics) {
+        const metrics = [
+            { key: 'titleTag', name: '📝 標題標籤' },
+            { key: 'metaDescription', name: '📄 Meta 描述' },
+            { key: 'headings', name: '🏷️ 標題結構' },
+            { key: 'images', name: '🖼️ 圖片優化' },
+            { key: 'pageSpeed', name: '⚡ 頁面速度' },
+            { key: 'mobileOptimization', name: '📱 移動端優化' }
+        ];
+
+        if (primaryMetrics.security !== undefined) {
+            metrics.push({ key: 'security', name: '🔒 安全性' });
+            metrics.push({ key: 'structuredData', name: '🏗️ 結構化資料' });
+            metrics.push({ key: 'socialMedia', name: '📱 社交媒體' });
+            metrics.push({ key: 'accessibility', name: '♿ 無障礙性' });
+        }
+
+        return metrics.map(metric => {
+            const primaryScore = primaryMetrics[metric.key] || 0;
+            const competitorScore = competitorMetrics[metric.key] || 0;
+            const diff = primaryScore - competitorScore;
+            
+            return `
+                <div class="metric-row">
+                    <div class="metric-name">${metric.name}</div>
+                    <div class="score-comparison">
+                        <div class="score primary ${this.getScoreClass(primaryScore)}">${primaryScore}</div>
+                        <div class="diff-indicator ${diff > 0 ? 'positive' : diff < 0 ? 'negative' : 'neutral'}">
+                            ${diff > 0 ? '+' : ''}${diff}
+                        </div>
+                        <div class="score competitor ${this.getScoreClass(competitorScore)}">${competitorScore}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    generateCompetitiveInsights(primary, competitor) {
+        const insights = [];
+        
+        // 整體表現分析
+        const scoreDiff = primary.overallScore - competitor.overallScore;
+        if (scoreDiff > 10) {
+            insights.push(`您的網站在整體 SEO 表現上明顯優於競爭對手，領先 ${scoreDiff} 分`);
+        } else if (scoreDiff < -10) {
+            insights.push(`競爭對手的 SEO 表現較佳，您需要加強優化工作`);
+        } else {
+            insights.push('兩網站的 SEO 表現相當，可針對弱項進行重點改善');
+        }
+        
+        // 找出優勢領域
+        const strengths = this.findStrengths(primary.metrics, competitor.metrics);
+        if (strengths.length > 0) {
+            insights.push(`您的優勢領域：${strengths.join('、')}`);
+        }
+        
+        // 找出改善機會
+        const opportunities = this.findOpportunities(primary.metrics, competitor.metrics);
+        if (opportunities.length > 0) {
+            insights.push(`改善機會：${opportunities.join('、')}`);
+        }
+        
+        return insights.map(insight => `<div class="insight-item">💡 ${insight}</div>`).join('');
+    }
+
+    findStrengths(primaryMetrics, competitorMetrics) {
+        const strengths = [];
+        const metricsMap = {
+            titleTag: '標題優化',
+            metaDescription: 'Meta 描述',
+            headings: '標題結構',
+            images: '圖片優化',
+            pageSpeed: '頁面速度',
+            mobileOptimization: '移動端優化'
+        };
+        
+        Object.entries(metricsMap).forEach(([key, name]) => {
+            if (primaryMetrics[key] && competitorMetrics[key] && primaryMetrics[key] - competitorMetrics[key] > 10) {
+                strengths.push(name);
+            }
+        });
+        
+        return strengths;
+    }
+
+    findOpportunities(primaryMetrics, competitorMetrics) {
+        const opportunities = [];
+        const metricsMap = {
+            titleTag: '標題優化',
+            metaDescription: 'Meta 描述',
+            headings: '標題結構',
+            images: '圖片優化',
+            pageSpeed: '頁面速度',
+            mobileOptimization: '移動端優化'
+        };
+        
+        Object.entries(metricsMap).forEach(([key, name]) => {
+            if (primaryMetrics[key] && competitorMetrics[key] && competitorMetrics[key] - primaryMetrics[key] > 10) {
+                opportunities.push(name);
+            }
+        });
+        
+        return opportunities;
+    }
+
+    exportComparison() {
+        if (!this.currentComparison) return;
+        
+        const comparisonData = {
+            primary: this.currentComparison.primary,
+            competitor: this.currentComparison.competitor,
+            comparisonTime: new Date().toISOString()
+        };
+        
+        const jsonString = JSON.stringify(comparisonData, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `seo-comparison-${this.currentComparison.primary.domain}-vs-${this.currentComparison.competitor.domain}-${new Date().getTime()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        this.showNotification('📄 比較報告已匯出！');
+    }
+
+    shareComparison() {
+        if (!this.currentComparison) return;
+        
+        const shareText = `我使用 SEO 分析工具比較了 ${this.currentComparison.primary.domain} (${this.currentComparison.primary.overallScore}/100) vs ${this.currentComparison.competitor.domain} (${this.currentComparison.competitor.overallScore}/100)`;
+        
+        if (navigator.share) {
+            navigator.share({
+                title: 'SEO 競爭對手比較',
+                text: shareText
+            });
+        } else {
+            navigator.clipboard.writeText(shareText).then(() => {
+                this.showNotification('📤 比較結果已複製到剪貼簿！');
+            });
+        }
+    }
+
+    saveComparisonHistory(primary, competitor) {
+        try {
+            const comparison = {
+                primary: { domain: primary.domain, score: primary.overallScore },
+                competitor: { domain: competitor.domain, score: competitor.overallScore },
+                timestamp: new Date().toISOString()
+            };
+            
+            let history = JSON.parse(localStorage.getItem('comparisonHistory') || '[]');
+            history.unshift(comparison);
+            history = history.slice(0, 5); // 只保留最近 5 次比較
+            
+            localStorage.setItem('comparisonHistory', JSON.stringify(history));
+        } catch (error) {
+            console.error('儲存比較歷史失敗:', error);
+        }
+    }
+
     getScoreClass(score) {
         if (score >= 90) return 'excellent';
         if (score >= 80) return 'good';
@@ -505,14 +904,26 @@ class SEOAnalyzer {
         // 分析連結
         const linksAnalysis = this.analyzeLinks(doc, domain);
         
-        // 計算總分
+        // 新增：進階 SEO 檢測
+        const securityAnalysis = this.checkSecurity(url, doc);
+        const structuredDataAnalysis = this.checkStructuredData(doc);
+        const socialMetaAnalysis = this.checkSocialMeta(doc);
+        const performanceAnalysis = this.analyzePerformance(doc);
+        const accessibilityAnalysis = this.checkAccessibility(doc);
+        
+        // 計算總分（包含新的指標）
+        const mobileResult = this.checkMobileOptimization(doc);
         const scores = {
             titleTag: titleAnalysis.score,
             metaDescription: metaAnalysis.score,
             headings: headingsAnalysis.score,
             images: imagesAnalysis.score,
             pageSpeed: this.estimatePageSpeed(doc),
-            mobileOptimization: this.checkMobileOptimization(doc)
+            mobileOptimization: mobileResult.score,
+            security: securityAnalysis.score,
+            structuredData: structuredDataAnalysis.score,
+            socialMedia: socialMetaAnalysis.score,
+            accessibility: accessibilityAnalysis.score
         };
         
         const overallScore = Math.round(Object.values(scores).reduce((a, b) => a + b, 0) / Object.keys(scores).length);
@@ -528,7 +939,13 @@ class SEOAnalyzer {
                 metaDescription: metaAnalysis,
                 headings: headingsAnalysis,
                 images: imagesAnalysis,
-                links: linksAnalysis
+                links: linksAnalysis,
+                security: securityAnalysis,
+                structuredData: structuredDataAnalysis,
+                socialMedia: socialMetaAnalysis,
+                performance: performanceAnalysis,
+                accessibility: accessibilityAnalysis,
+                mobile: mobileResult
             },
             suggestions: this.generateAdvancedSuggestions(scores, {
                 title: titleAnalysis,
@@ -697,10 +1114,17 @@ class SEOAnalyzer {
 
     checkMobileOptimization(doc) {
         let score = 70;
+        const issues = [];
         
         const viewport = doc.querySelector('meta[name="viewport"]');
         if (viewport) {
             score += 20;
+            const content = viewport.getAttribute('content');
+            if (content && content.includes('width=device-width')) {
+                score += 5;
+            }
+        } else {
+            issues.push('缺少 viewport meta 標籤');
         }
         
         // 檢查是否有響應式設計相關的 CSS
@@ -713,7 +1137,309 @@ class SEOAnalyzer {
             score += 10;
         }
         
-        return Math.min(score, 95);
+        // 檢查媒體查詢
+        const styles = doc.querySelectorAll('style');
+        const hasMediaQueries = Array.from(styles).some(style => 
+            style.textContent.includes('@media')
+        );
+        
+        if (hasMediaQueries) {
+            score += 5;
+        } else {
+            issues.push('未偵測到媒體查詢（響應式設計）');
+        }
+        
+        return {
+            score: Math.min(score, 95),
+            issues: issues
+        };
+    }
+
+    // 新增：安全性檢查
+    checkSecurity(url, doc) {
+        let score = 80;
+        const issues = [];
+        const features = [];
+        
+        // 檢查 HTTPS
+        if (url.startsWith('https://')) {
+            score += 15;
+            features.push('使用 HTTPS 安全連接');
+        } else {
+            score -= 20;
+            issues.push('未使用 HTTPS 加密連接');
+        }
+        
+        // 檢查安全相關的 meta 標籤
+        const csp = doc.querySelector('meta[http-equiv="Content-Security-Policy"]');
+        if (csp) {
+            score += 5;
+            features.push('設定了內容安全政策 (CSP)');
+        }
+        
+        const xFrameOptions = doc.querySelector('meta[http-equiv="X-Frame-Options"]');
+        if (xFrameOptions) {
+            score += 3;
+            features.push('防止頁面被嵌入 iframe');
+        }
+        
+        // 檢查是否有混合內容（HTTP 資源在 HTTPS 頁面中）
+        if (url.startsWith('https://')) {
+            const httpResources = [];
+            doc.querySelectorAll('[src], [href]').forEach(element => {
+                const resource = element.getAttribute('src') || element.getAttribute('href');
+                if (resource && resource.startsWith('http://')) {
+                    httpResources.push(resource);
+                }
+            });
+            
+            if (httpResources.length > 0) {
+                score -= 10;
+                issues.push(`發現 ${httpResources.length} 個不安全的 HTTP 資源`);
+            }
+        }
+        
+        return {
+            score: Math.max(score, 20),
+            issues: issues,
+            features: features
+        };
+    }
+
+    // 新增：結構化資料檢查
+    checkStructuredData(doc) {
+        let score = 60;
+        const types = [];
+        const issues = [];
+        
+        // 檢查 JSON-LD
+        const jsonLdScripts = doc.querySelectorAll('script[type="application/ld+json"]');
+        if (jsonLdScripts.length > 0) {
+            score += 25;
+            jsonLdScripts.forEach((script, index) => {
+                try {
+                    const data = JSON.parse(script.textContent);
+                    if (data['@type']) {
+                        types.push(data['@type']);
+                    }
+                } catch (e) {
+                    issues.push(`JSON-LD 格式錯誤 (第 ${index + 1} 個)`);
+                }
+            });
+        }
+        
+        // 檢查 Microdata
+        const microdataElements = doc.querySelectorAll('[itemtype]');
+        if (microdataElements.length > 0) {
+            score += 10;
+            microdataElements.forEach(element => {
+                const itemtype = element.getAttribute('itemtype');
+                if (itemtype) {
+                    types.push(itemtype.split('/').pop());
+                }
+            });
+        }
+        
+        // 檢查 RDFa
+        const rdfaElements = doc.querySelectorAll('[typeof]');
+        if (rdfaElements.length > 0) {
+            score += 5;
+        }
+        
+        if (types.length === 0) {
+            issues.push('未找到結構化資料標記');
+        }
+        
+        return {
+            score: Math.min(score, 95),
+            types: [...new Set(types)],
+            issues: issues
+        };
+    }
+
+    // 新增：社交媒體 meta 標籤檢查
+    checkSocialMeta(doc) {
+        let score = 50;
+        const platforms = {};
+        const issues = [];
+        
+        // 檢查 Open Graph 標籤
+        const ogTags = {
+            title: doc.querySelector('meta[property="og:title"]'),
+            description: doc.querySelector('meta[property="og:description"]'),
+            image: doc.querySelector('meta[property="og:image"]'),
+            url: doc.querySelector('meta[property="og:url"]'),
+            type: doc.querySelector('meta[property="og:type"]')
+        };
+        
+        let ogCount = 0;
+        Object.entries(ogTags).forEach(([key, element]) => {
+            if (element && element.getAttribute('content')) {
+                ogCount++;
+            }
+        });
+        
+        if (ogCount > 0) {
+            score += ogCount * 8;
+            platforms.facebook = `${ogCount}/5 個 Open Graph 標籤`;
+        } else {
+            issues.push('缺少 Facebook Open Graph 標籤');
+        }
+        
+        // 檢查 Twitter Card 標籤
+        const twitterTags = {
+            card: doc.querySelector('meta[name="twitter:card"]'),
+            title: doc.querySelector('meta[name="twitter:title"]'),
+            description: doc.querySelector('meta[name="twitter:description"]'),
+            image: doc.querySelector('meta[name="twitter:image"]')
+        };
+        
+        let twitterCount = 0;
+        Object.entries(twitterTags).forEach(([key, element]) => {
+            if (element && element.getAttribute('content')) {
+                twitterCount++;
+            }
+        });
+        
+        if (twitterCount > 0) {
+            score += twitterCount * 5;
+            platforms.twitter = `${twitterCount}/4 個 Twitter Card 標籤`;
+        } else {
+            issues.push('缺少 Twitter Card 標籤');
+        }
+        
+        return {
+            score: Math.min(score, 95),
+            platforms: platforms,
+            issues: issues
+        };
+    }
+
+    // 新增：效能分析
+    analyzePerformance(doc) {
+        let score = 75;
+        const metrics = {};
+        const issues = [];
+        
+        // 統計資源數量
+        const images = doc.querySelectorAll('img').length;
+        const scripts = doc.querySelectorAll('script').length;
+        const stylesheets = doc.querySelectorAll('link[rel="stylesheet"]').length;
+        const totalResources = images + scripts + stylesheets;
+        
+        metrics.totalResources = totalResources;
+        metrics.images = images;
+        metrics.scripts = scripts;
+        metrics.stylesheets = stylesheets;
+        
+        // 評估資源數量
+        if (totalResources > 50) {
+            score -= 15;
+            issues.push('資源文件過多，可能影響載入速度');
+        }
+        
+        if (images > 20) {
+            score -= 10;
+            issues.push('圖片數量過多');
+        }
+        
+        if (scripts > 10) {
+            score -= 10;
+            issues.push('JavaScript 文件過多');
+        }
+        
+        // 檢查是否有延遲載入
+        const lazyImages = doc.querySelectorAll('img[loading="lazy"]').length;
+        if (lazyImages > 0) {
+            score += 10;
+            metrics.lazyLoadingImages = lazyImages;
+        }
+        
+        // 檢查壓縮標頭（模擬）
+        const hasMinifiedCSS = Array.from(doc.querySelectorAll('link[rel="stylesheet"]'))
+            .some(link => link.href.includes('.min.css'));
+        const hasMinifiedJS = Array.from(doc.querySelectorAll('script[src]'))
+            .some(script => script.src.includes('.min.js'));
+            
+        if (hasMinifiedCSS || hasMinifiedJS) {
+            score += 5;
+            metrics.hasMinification = true;
+        }
+        
+        return {
+            score: Math.max(score, 30),
+            metrics: metrics,
+            issues: issues
+        };
+    }
+
+    // 新增：無障礙性檢查
+    checkAccessibility(doc) {
+        let score = 70;
+        const features = [];
+        const issues = [];
+        
+        // 檢查圖片 alt 屬性
+        const images = doc.querySelectorAll('img');
+        const imagesWithAlt = doc.querySelectorAll('img[alt]').length;
+        if (images.length > 0) {
+            const altPercentage = (imagesWithAlt / images.length) * 100;
+            if (altPercentage >= 90) {
+                score += 10;
+                features.push('圖片 alt 屬性完善');
+            } else if (altPercentage < 50) {
+                score -= 15;
+                issues.push('多數圖片缺少 alt 屬性');
+            }
+        }
+        
+        // 檢查表單標籤
+        const formInputs = doc.querySelectorAll('input, textarea, select').length;
+        const labelsForInputs = doc.querySelectorAll('label[for]').length;
+        if (formInputs > 0) {
+            if (labelsForInputs >= formInputs) {
+                score += 10;
+                features.push('表單元素有適當的標籤');
+            } else {
+                score -= 10;
+                issues.push('部分表單元素缺少標籤');
+            }
+        }
+        
+        // 檢查標題階層
+        const h1 = doc.querySelectorAll('h1').length;
+        const h2 = doc.querySelectorAll('h2').length;
+        const h3 = doc.querySelectorAll('h3').length;
+        
+        if (h1 === 1 && h2 > 0) {
+            score += 10;
+            features.push('標題結構層次清晰');
+        } else if (h1 !== 1) {
+            score -= 5;
+            issues.push('標題結構不當（應有唯一的 H1）');
+        }
+        
+        // 檢查語言屬性
+        const htmlLang = doc.documentElement.getAttribute('lang');
+        if (htmlLang) {
+            score += 5;
+            features.push('設定了頁面語言屬性');
+        } else {
+            issues.push('缺少 lang 屬性');
+        }
+        
+        // 檢查 ARIA 標籤
+        const ariaElements = doc.querySelectorAll('[aria-label], [aria-labelledby], [aria-describedby]').length;
+        if (ariaElements > 0) {
+            score += 5;
+            features.push('使用了 ARIA 標籤');
+        }
+        
+        return {
+            score: Math.min(score, 95),
+            features: features,
+            issues: issues
+        };
     }
 
     performSmartAnalysis(url) {

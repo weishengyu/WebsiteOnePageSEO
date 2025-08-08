@@ -59,6 +59,15 @@
                     <label for="website-url">輸入網站網址：</label>
                     <input type="url" id="website-url" placeholder="https://example.com">
                     <button id="analyze-btn">分析網站</button>
+                    <div class="compare-section">
+                        <label class="compare-label">
+                            <input type="checkbox" id="compare-mode"> 啟用競爭對手比較
+                        </label>
+                        <div id="competitor-inputs" class="competitor-inputs" style="display:none;">
+                            <input type="url" id="competitor-url" placeholder="競爭對手網址">
+                            <button id="compare-btn">比較分析</button>
+                        </div>
+                    </div>
                 </div>
                 <div id="results" class="results-container">
                     <!-- 分析結果將顯示在這裡 -->
